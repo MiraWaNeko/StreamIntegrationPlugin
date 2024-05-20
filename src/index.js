@@ -74,11 +74,61 @@ const colorDictionary = {
     "white": 2, "light": 2, "snow": 2,
 };
 
-const cheatTypes = {
-    "GenerateGuests": 20,
-    "ExplodeGuests": 22,
-    "GiveAllGuests": 22,
-    "SpawnDucks": 46
+const CheatTypes = {
+    SandboxMode: 0,
+    DisableClearanceChecks: 1,
+    DisableSupportLimits: 2,
+    ShowAllOperatingModes: 3,
+    ShowVehiclesFromOtherTrackTypes: 4,
+    DisableTrainLengthLimit: 5,
+    EnableChainLiftOnAllTrack: 6,
+    FastLiftHill: 7,
+    DisableBrakesFailure: 8,
+    DisableAllBreakdowns: 9,
+    UnlockAllPrices: 10,
+    BuildInPauseMode: 11,
+    IgnoreRideIntensity: 12,
+    DisableVandalism: 13,
+    DisableLittering: 14,
+    NoMoney: 15,
+    AddMoney: 16,
+    SetMoney: 17,
+    ClearLoan: 18,
+    SetGuestParameter: 19,
+    GenerateGuests: 20,
+    RemoveAllGuests: 21,
+    GiveAllGuests: 22,
+    SetGrassLength: 23,
+    WaterPlants: 24,
+    DisablePlantAging: 25,
+    FixVandalism: 26,
+    RemoveLitter: 27,
+    SetStaffSpeed: 28,
+    RenewRides: 29,
+    MakeDestructible: 30,
+    FixRides: 31,
+    ResetCrashStatus: 32,
+    TenMinuteInspections: 33,
+    WinScenario: 34,
+    ForceWeather: 35,
+    FreezeWeather: 36,
+    OpenClosePark: 37,
+    HaveFun: 38,
+    SetForcedParkRating: 39,
+    NeverEndingMarketing: 40,
+    AllowArbitraryRideTypeChanges: 41,
+    OwnAllLand: 42,
+    DisableRideValueAging: 43,
+    IgnoreResearchStatus: 44,
+    EnableAllDrawableTrackPieces: 45,
+    CreateDucks: 46,
+    RemoveDucks: 47,
+    AllowTrackPlaceInvalidHeights: 48,
+    NoCapOnQueueLengthDummy: 49, // Removed; this dummy exists only for deserialisation parks that had it saved
+    AllowRegularPathAsQueue: 50,
+    AllowSpecialColourSchemes: 51,
+    RemoveParkFences: 52,
+    Count: 53,
 };
 
 function parseIntOrDefault(n, def) {
@@ -353,9 +403,10 @@ function main() {
 
             let currentPeep = null;
             let preExisting = false;
-            let peeps = map.getAllEntities("peep");
-            for (let i = 0; i < peeps.length; i++) {
-                let peep = peeps[i];
+            for (let i = 0; i < map.numEntities; i++) {
+                let peep = map.getEntity(i);
+                if (!entity || entity.type != 'peep')
+                    continue;
 
                 if (peep.name == name) {
                     currentPeep = peep;
@@ -431,8 +482,8 @@ function main() {
         }
         else if (data.type == "SPAWN_DUCKS") {
             let value = parseIntOrDefault(data.message, 10);
-            context.executeAction("setcheataction", {
-                type: cheatTypes.SpawnDucks,
+            context.executeAction("cheatset", {
+                type: CheatTypes.CreateDucks,
                 param1: value,
                 param2: 0
             }, (result) => {
@@ -447,8 +498,8 @@ function main() {
             }
         }
         else if (data.type == "GIVE_PEEPS_BALLOONS") {
-            context.executeAction("setcheataction", {
-                type: cheatTypes.GiveAllGuests,
+            context.executeAction("cheatset", {
+                type: CheatTypes.GiveAllGuests,
                 param1: 2,
                 param2: 0
             }, (result) => {
@@ -463,8 +514,8 @@ function main() {
             }
         }
         else if (data.type == "GIVE_PEEPS_PARK_MAPS") {
-            context.executeAction("setcheataction", {
-                type: cheatTypes.GiveAllGuests,
+            context.executeAction("cheatset", {
+                type: CheatTypes.GiveAllGuests,
                 param1: 1,
                 param2: 0
             }, (result) => {
@@ -479,8 +530,8 @@ function main() {
             }
         }
         else if (data.type == "GIVE_PEEPS_UMBRELLAS") {
-            context.executeAction("setcheataction", {
-                type: cheatTypes.GiveAllGuests,
+            context.executeAction("cheatset", {
+                type: CheatTypes.GiveAllGuests,
                 param1: 3,
                 param2: 0
             }, (result) => {
@@ -496,8 +547,8 @@ function main() {
         }
         else if (data.type == "SPAWN_PEEPS") {
             let value = parseIntOrDefault(data.message, 100);
-            context.executeAction("setcheataction", {
-                type: cheatTypes.GenerateGuests,
+            context.executeAction("cheatset", {
+                type: CheatTypes.GenerateGuests,
                 param1: parseIntOrDefault(data.message, 100),
                 param2: 0
             }, (result) => {
@@ -512,8 +563,8 @@ function main() {
             }
         }
         else if (data.type == "GIVE_PEEPS_MONEY") {
-            context.executeAction("setcheataction", {
-                type: cheatTypes.GiveAllGuests,
+            context.executeAction("cheatset", {
+                type: CheatTypes.GiveAllGuests,
                 param1: 0,
                 param2: 0
             }, (result) => {
@@ -528,8 +579,8 @@ function main() {
             }
         }
         else if (data.type == "REMOVE_ALL_PEEPS") {
-            context.executeAction("setcheataction", {
-                type: 21,
+            context.executeAction("cheatset", {
+                type: CheatTypes.RemoveAllGuests,
                 param1: 0,
                 param2: 0
             }, (result) => {
@@ -544,8 +595,8 @@ function main() {
             }
         }
         else if (data.type == "NAUSEATE_PEEPS") {
-            context.executeAction("setcheataction", {
-                type: 19,
+            context.executeAction("cheatset", {
+                type: CheatTypes.SetGuestParameter,
                 param1: 4,
                 param2: 255
             }, (result) => {
@@ -560,8 +611,8 @@ function main() {
             }
         }
         else if (data.type == "HEAL_PEEPS") {
-            context.executeAction("setcheataction", {
-                type: 19,
+            context.executeAction("cheatset", {
+                type: CheatTypes.SetGuestParameter,
                 param1: 4,
                 param2: 0
             }, (result) => {
@@ -576,8 +627,8 @@ function main() {
             }
         }
         else if (data.type == "FILL_BLADDERS") {
-            context.executeAction("setcheataction", {
-                type: 19,
+            context.executeAction("cheatset", {
+                type: CheatTypes.SetGuestParameter,
                 param1: 6,
                 param2: 255
             }, (result) => {
@@ -592,8 +643,8 @@ function main() {
             }
         }
         else if (data.type == "EMPTY_BLADDERS") {
-            context.executeAction("setcheataction", {
-                type: 19,
+            context.executeAction("cheatset", {
+                type: CheatTypes.SetGuestParameter,
                 param1: 6,
                 param2: 0
             }, (result) => {
@@ -608,8 +659,8 @@ function main() {
             }
         }
         else if (data.type == "MOW_GRASS") {
-            context.executeAction("setcheataction", {
-                type: 23,
+            context.executeAction("cheatset", {
+                type: CheatTypes.SetGrassLength,
                 param1: 3,
                 param2: 0,
                 flags: null
@@ -625,8 +676,8 @@ function main() {
             }
         }
         else if (data.type == "FIX_RIDES") {
-            context.executeAction("setcheataction", {
-                type: 31,
+            context.executeAction("cheatset", {
+                type: CheatTypes.FixRides,
                 param1: 0,
                 param2: 0
             }, (result) => {
@@ -680,8 +731,8 @@ function main() {
             }
         }
         else if (data.type == "FIX_VANDALISM") {
-            context.executeAction("setcheataction", {
-                type: 26,
+            context.executeAction("cheatset", {
+                type: CheatTypes.FixVandalism,
                 param1: 0,
                 param2: 0
             }, (result) => {
@@ -696,8 +747,8 @@ function main() {
             }
         }
         else if (data.type == "REMOVE_LITTER") {
-            context.executeAction("setcheataction", {
-                type: 27,
+            context.executeAction("cheatset", {
+                type: CheatTypes.RemoveLitter,
                 param1: 0,
                 param2: 0
             }, (result) => {
@@ -712,8 +763,8 @@ function main() {
             }
         }
         else if (data.type == "FORCE_WEATHER") {
-            context.executeAction("setcheataction", {
-                type: 35,
+            context.executeAction("cheatset", {
+                type: CheatTypes.ForceWeather,
                 param1: parseIntOrDefault(data.message, 0),
                 param2: 0
             }, (result) => {
@@ -747,8 +798,8 @@ function main() {
                 value < 0 && data.type == "REMOVE_MONEY") {
                 if (value < 0)
                     value = -value;
-                context.executeAction("setcheataction", {
-                    type: 16,
+                context.executeAction("cheatset", {
+                    type: CheatTypes.AddMoney,
                     param1: value * 10,
                     param2: 0
                 }, (result) => {
@@ -766,8 +817,8 @@ function main() {
                 value > 0 && data.type == "REMOVE_MONEY") {
                 if (value > 0)
                     value = -value;
-                context.executeAction("setcheataction", {
-                    type: 16,
+                context.executeAction("cheatset", {
+                    type: CheatTypes.AddMoney,
                     param1: value * 10,
                     param2: 0
                 }, (result) => {
@@ -895,9 +946,11 @@ function main() {
 
 registerPlugin({
     name: "StreamIntegration",
-    version: "0.1",
+    version: "0.2",
     licence: "MIT",
-    authors: ["Oli414"],
+    authors: ["Oli414", "Mira wa Neko"],
     type: "local",
+    minApiVersion: 74,
+    targetApiVersion: 87,
     main: main
 });
