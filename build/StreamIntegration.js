@@ -3515,7 +3515,7 @@ function main() {
 
 registerPlugin({
     name: "StreamIntegration",
-    version: "0.2",
+    version: "1.5",
     licence: "MIT",
     authors: ["Oli414", "Mira wa Neko"],
     type: "local",
